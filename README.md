@@ -1,7 +1,7 @@
 # Emacs-retrie
 ![Emacs Version](https://img.shields.io/badge/Emacs->=24.5-blue.svg)
 
-Emacs plugin for [retrie](https://github.com/facebookincubator/retrie)
+An Emacs package to refactor Haskell code with [retrie](https://github.com/facebookincubator/retrie)
 
 # Author
 

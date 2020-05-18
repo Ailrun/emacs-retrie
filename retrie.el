@@ -132,32 +132,32 @@ They will be passed to retrie along with the options created from the retrie- cu
 
 (defun retrie-rule-forward-in-current-buffer (name)
   "Apply the rule of the name NAME in left-to-right manner in the current buffer."
-  (interactive "sname of function to fold in the current buffer:")
+  (interactive "sname of rule to apply (left-to-right) in the current buffer:")
   (retrie--call-retrie-for-buffer (current-buffer) retrie--rule-forward-option name))
 
 (defun retrie-rule-forward-in-buffer (buffername name)
   "Apply the rule of the name NAME in left-to-right manner in the buffer BUFFERNAME."
-  (interactive "*bbuffer:\nsname of function to fold in %s:")
+  (interactive "*bbuffer:\nsname of rule to apply (left-to-right) in %s:")
   (retrie--call-retrie-for-buffer (get-buffer buffername) retrie--rule-forward-option name))
 
 (defun retrie-rule-forward-in-file (filepath name)
   "Apply the rule of the name NAME in left-to-right manner in the file FILEPATH."
-  (interactive "ffile path:\nsname of function to fold in %s:")
+  (interactive "ffile path:\nsname of rule to apply (left-to-right) in %s:")
   (retrie--call-retrie-for-file filepath retrie--rule-forward-option name))
 
 (defun retrie-rule-backward-in-current-buffer (name)
   "Apply the rule of the name NAME in right-to-left manner in the current buffer."
-  (interactive "sname of function to unfold in the current buffer:")
+  (interactive "sname of rule to apply (right-to-left) in the current buffer:")
   (retrie--call-retrie-for-buffer (current-buffer) retrie--rule-backward-option name))
 
 (defun retrie-rule-backward-in-buffer (buffername name)
   "Apply the rule of the name NAME in right-to-left manner in the buffer BUFFERNAME."
-  (interactive "*bbuffer:\nsname of function to unfold in %s:")
+  (interactive "*bbuffer:\nsname of rule to apply (right-to-left) in %s:")
   (retrie--call-retrie-for-buffer (get-buffer buffername) retrie--rule-backward-option name))
 
 (defun retrie-rule-backward-in-file (filepath name)
   "Apply the rule of the name NAME in right-to-left manner in the file FILEPATH."
-  (interactive "ffile path:\nsname of function to unfold in %s:")
+  (interactive "ffile path:\nsname of rule to apply (right-to-left) in %s:")
   (retrie--call-retrie-for-file filepath retrie--rule-backward-option name))
 
 ;; Internal functions

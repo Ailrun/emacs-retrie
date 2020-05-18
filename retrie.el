@@ -25,17 +25,29 @@
 
 ;;; Commentary:
 
-;; This package is a Emacs wrapper of retrie.
-;; Currently this provides the following 4 functions
-;; - retrie-unfold-in-current-buffer
+;; This package is an Emacs wrapper of retrie (URL `https://github.com/facebookincubator/retrie').
+;;
+;; Currently this provides the following 12 functions
+;;
 ;; - retrie-fold-in-current-buffer
-;; - retrie-unfold-in-buffer
 ;; - retrie-fold-in-buffer
+;; - retrie-fold-in-file
+;; - retrie-unfold-in-current-buffer
+;; - retrie-unfold-in-buffer
+;; - retrie-unfold-in-file
+;; - retrie-rule-forward-in-current-buffer
+;; - retrie-rule-forward-in-buffer
+;; - retrie-rule-forward-in-file
+;; - retrie-rule-backward-in-current-buffer
+;; - retrie-rule-backward-in-buffer
+;; - retrie-rule-backward-in-file
 
 ;;; Change Log:
 
 ;;; Code:
 (require 'subr-x)
+
+;; Customize variables
 
 (defgroup retrie
   nil
@@ -79,40 +91,87 @@ They will be passed to retrie along with the options created from the retrie- cu
   :type '(list string)
   :risky t)
 
-(defun retrie-unfold-in-current-buffer (name)
-  "Unfold the function definition of the name NAME in the current buffer."
-  (interactive "sname of function to unfold:")
-  (retrie--unfold-in-buffer (current-buffer) name))
+;; Constants
+
+(defconst retrie--fold-option "--fold")
+(defconst retrie--unfold-option "--unfold")
+(defconst retrie--rule-forward-option "--rule-forward")
+(defconst retrie--rule-backward-option "--rule-backward")
+
+;; Interactive commands
 
 (defun retrie-fold-in-current-buffer (name)
   "Fold the function definition of the name NAME in the current buffer."
-  (interactive "sname of function to fold:")
-  (retrie--fold-in-buffer (current-buffer) name))
-
-(defun retrie-unfold-in-buffer (buffername name)
-  "Unfold the function definition of the name NAME in the buffer BUFFERNAME."
-  (interactive "*bbuffer:\nsname of function to unfold in %s:")
-  (retrie--unfold-in-buffer (get-buffer buffername) name))
+  (interactive "sname of function to fold in the current buffer:")
+  (retrie--call-retrie-for-buffer (current-buffer) retrie--fold-option name))
 
 (defun retrie-fold-in-buffer (buffername name)
   "Fold the function definition of the name NAME in the buffer BUFFERNAME."
   (interactive "*bbuffer:\nsname of function to fold in %s:")
-  (retrie--fold-in-buffer (get-buffer buffername) name))
+  (retrie--call-retrie-for-buffer (get-buffer buffername) retrie--fold-option name))
 
-(defun retrie--unfold-in-buffer (buffer name)
-  "Internal function to unfold the function definition of the name NAME in BUFFER."
-  (retrie--call-retrie-for-buffer buffer "--unfold" name))
+(defun retrie-fold-in-file (filepath name)
+  "Fold the function definition of the name NAME in the file FILEPATH."
+  (interactive "ffile path:\nsname of function to fold in %s:")
+  (retrie--call-retrie-for-file filepath retrie--fold-option name))
 
-(defun retrie--fold-in-buffer (buffer name)
-  "Internal function to fold the function definition of the name NAME in BUFFER."
-  (retrie--call-retrie-for-buffer buffer "--fold" name))
+(defun retrie-unfold-in-current-buffer (name)
+  "Unfold the function definition of the name NAME in the current buffer."
+  (interactive "sname of function to unfold in the current buffer:")
+  (retrie--call-retrie-for-buffer (current-buffer) retrie--unfold-option name))
+
+(defun retrie-unfold-in-buffer (buffername name)
+  "Unfold the function definition of the name NAME in the buffer BUFFERNAME."
+  (interactive "*bbuffer:\nsname of function to unfold in %s:")
+  (retrie--call-retrie-for-buffer (get-buffer buffername) retrie--unfold-option name))
+
+(defun retrie-unfold-in-file (filepath name)
+  "Unfold the function definition of the name NAME in the file FILEPATH."
+  (interactive "ffile path:\nsname of function to unfold in %s:")
+  (retrie--call-retrie-for-file filepath retrie--unfold-option name))
+
+(defun retrie-rule-forward-in-current-buffer (name)
+  "Apply the rule of the name NAME in left-to-right manner in the current buffer."
+  (interactive "sname of function to fold in the current buffer:")
+  (retrie--call-retrie-for-buffer (current-buffer) retrie--rule-forward-option name))
+
+(defun retrie-rule-forward-in-buffer (buffername name)
+  "Apply the rule of the name NAME in left-to-right manner in the buffer BUFFERNAME."
+  (interactive "*bbuffer:\nsname of function to fold in %s:")
+  (retrie--call-retrie-for-buffer (get-buffer buffername) retrie--rule-forward-option name))
+
+(defun retrie-rule-forward-in-file (filepath name)
+  "Apply the rule of the name NAME in left-to-right manner in the file FILEPATH."
+  (interactive "ffile path:\nsname of function to fold in %s:")
+  (retrie--call-retrie-for-file filepath retrie--rule-forward-option name))
+
+(defun retrie-rule-backward-in-current-buffer (name)
+  "Apply the rule of the name NAME in right-to-left manner in the current buffer."
+  (interactive "sname of function to unfold in the current buffer:")
+  (retrie--call-retrie-for-buffer (current-buffer) retrie--rule-backward-option name))
+
+(defun retrie-rule-backward-in-buffer (buffername name)
+  "Apply the rule of the name NAME in right-to-left manner in the buffer BUFFERNAME."
+  (interactive "*bbuffer:\nsname of function to unfold in %s:")
+  (retrie--call-retrie-for-buffer (get-buffer buffername) retrie--rule-backward-option name))
+
+(defun retrie-rule-backward-in-file (filepath name)
+  "Apply the rule of the name NAME in right-to-left manner in the file FILEPATH."
+  (interactive "ffile path:\nsname of function to unfold in %s:")
+  (retrie--call-retrie-for-file filepath retrie--rule-backward-option name))
+
+;; Internal functions
 
 (defun retrie--call-retrie-for-buffer (buffer &rest args)
   "Internal function to call retrie in BUFFER with ARGS."
-  (let ((filename (buffer-file-name buffer)))
-    (unless filename
+  (let ((filepath (buffer-file-name buffer)))
+    (unless filepath
       (error "%s is not visiting any file.  Abort" (buffer-name buffer)))
-    (apply #'retrie--call-retrie "--target-file" filename args)))
+    (apply #'retrie--call-retrie-for-file filepath args)))
+
+(defun retrie--call-retrie-for-file (filepath &rest args)
+  "Internal function to call retrie in FILEPATH with ARGS."
+  (apply #'retrie--call-retrie "--target-file" filepath args))
 
 (defun retrie--call-retrie (&rest args)
   "Internal function to call retrie with ARGS."

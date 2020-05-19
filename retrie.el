@@ -27,7 +27,7 @@
 
 ;; This package is an Emacs wrapper of retrie (URL `https://github.com/facebookincubator/retrie').
 ;;
-;; Currently this provides the following 12 functions
+;; Currently this provides the following 21 functions
 ;;
 ;; - retrie-fold-in-current-buffer
 ;; - retrie-fold-in-buffer
@@ -41,6 +41,15 @@
 ;; - retrie-rule-backward-in-current-buffer
 ;; - retrie-rule-backward-in-buffer
 ;; - retrie-rule-backward-in-file
+;; - retrie-type-forward-in-current-buffer
+;; - retrie-type-forward-in-buffer
+;; - retrie-type-forward-in-file
+;; - retrie-type-backward-in-current-buffer
+;; - retrie-type-backward-in-buffer
+;; - retrie-type-backward-in-file
+;; - retrie-adhoc-in-current-buffer
+;; - retrie-adhoc-in-buffer
+;; - retrie-adhoc-in-file
 
 ;;; Change Log:
 
@@ -97,68 +106,116 @@ They will be passed to retrie along with the options created from the retrie- cu
 (defconst retrie--unfold-option "--unfold")
 (defconst retrie--rule-forward-option "--rule-forward")
 (defconst retrie--rule-backward-option "--rule-backward")
+(defconst retrie--type-forward-option "--type-forward")
+(defconst retrie--type-backward-option "--type-backward")
+(defconst retrie--adhoc-option "--adhoc")
 
 ;; Interactive commands
 
 (defun retrie-fold-in-current-buffer (name)
-  "Fold the function definition of the name NAME in the current buffer."
+  "Fold the function definition of the fully-qualified name NAME in the current buffer."
   (interactive "sname of function to fold in the current buffer:")
   (retrie--call-retrie-for-buffer (current-buffer) retrie--fold-option name))
 
 (defun retrie-fold-in-buffer (buffername name)
-  "Fold the function definition of the name NAME in the buffer BUFFERNAME."
+  "Fold the function definition of the fully-qualified name NAME in the buffer BUFFERNAME."
   (interactive "*bbuffer:\nsname of function to fold in %s:")
   (retrie--call-retrie-for-buffer (get-buffer buffername) retrie--fold-option name))
 
 (defun retrie-fold-in-file (filepath name)
-  "Fold the function definition of the name NAME in the file FILEPATH."
+  "Fold the function definition of the fully-qualified name NAME in the file FILEPATH."
   (interactive "ffile path:\nsname of function to fold in %s:")
   (retrie--call-retrie-for-file filepath retrie--fold-option name))
 
 (defun retrie-unfold-in-current-buffer (name)
-  "Unfold the function definition of the name NAME in the current buffer."
+  "Unfold the function definition of the fully-qualified name NAME in the current buffer."
   (interactive "sname of function to unfold in the current buffer:")
   (retrie--call-retrie-for-buffer (current-buffer) retrie--unfold-option name))
 
 (defun retrie-unfold-in-buffer (buffername name)
-  "Unfold the function definition of the name NAME in the buffer BUFFERNAME."
+  "Unfold the function definition of the fully-qualified name NAME in the buffer BUFFERNAME."
   (interactive "*bbuffer:\nsname of function to unfold in %s:")
   (retrie--call-retrie-for-buffer (get-buffer buffername) retrie--unfold-option name))
 
 (defun retrie-unfold-in-file (filepath name)
-  "Unfold the function definition of the name NAME in the file FILEPATH."
+  "Unfold the function definition of the fully-qualified name NAME in the file FILEPATH."
   (interactive "ffile path:\nsname of function to unfold in %s:")
   (retrie--call-retrie-for-file filepath retrie--unfold-option name))
 
 (defun retrie-rule-forward-in-current-buffer (name)
-  "Apply the rule of the name NAME in left-to-right manner in the current buffer."
+  "Apply the rule of the fully-qualified name NAME in left-to-right manner in the current buffer."
   (interactive "sname of rule to apply (left-to-right) in the current buffer:")
   (retrie--call-retrie-for-buffer (current-buffer) retrie--rule-forward-option name))
 
 (defun retrie-rule-forward-in-buffer (buffername name)
-  "Apply the rule of the name NAME in left-to-right manner in the buffer BUFFERNAME."
+  "Apply the rule of the fully-qualified name NAME in left-to-right manner in the buffer BUFFERNAME."
   (interactive "*bbuffer:\nsname of rule to apply (left-to-right) in %s:")
   (retrie--call-retrie-for-buffer (get-buffer buffername) retrie--rule-forward-option name))
 
 (defun retrie-rule-forward-in-file (filepath name)
-  "Apply the rule of the name NAME in left-to-right manner in the file FILEPATH."
+  "Apply the rule of the fully-qualified name NAME in left-to-right manner in the file FILEPATH."
   (interactive "ffile path:\nsname of rule to apply (left-to-right) in %s:")
   (retrie--call-retrie-for-file filepath retrie--rule-forward-option name))
 
 (defun retrie-rule-backward-in-current-buffer (name)
-  "Apply the rule of the name NAME in right-to-left manner in the current buffer."
+  "Apply the rule of the fully-qualified name NAME in right-to-left manner in the current buffer."
   (interactive "sname of rule to apply (right-to-left) in the current buffer:")
   (retrie--call-retrie-for-buffer (current-buffer) retrie--rule-backward-option name))
 
 (defun retrie-rule-backward-in-buffer (buffername name)
-  "Apply the rule of the name NAME in right-to-left manner in the buffer BUFFERNAME."
+  "Apply the rule of the fully-qualified name NAME in right-to-left manner in the buffer BUFFERNAME."
   (interactive "*bbuffer:\nsname of rule to apply (right-to-left) in %s:")
   (retrie--call-retrie-for-buffer (get-buffer buffername) retrie--rule-backward-option name))
 
 (defun retrie-rule-backward-in-file (filepath name)
-  "Apply the rule of the name NAME in right-to-left manner in the file FILEPATH."
+  "Apply the rule of the fully-qualified name NAME in right-to-left manner in the file FILEPATH."
   (interactive "ffile path:\nsname of rule to apply (right-to-left) in %s:")
   (retrie--call-retrie-for-file filepath retrie--rule-backward-option name))
+
+(defun retrie-type-forward-in-current-buffer (name)
+  "Apply the type of the fully-qualified name NAME in left-to-right manner in the current buffer."
+  (interactive "sname of type to apply (left-to-right) in the current buffer:")
+  (retrie--call-retrie-for-buffer (current-buffer) retrie--type-forward-option name))
+
+(defun retrie-type-forward-in-buffer (buffername name)
+  "Apply the type of the fully-qualified name NAME in left-to-right manner in the buffer BUFFERNAME."
+  (interactive "*bbuffer:\nsname of type to apply (left-to-right) in %s:")
+  (retrie--call-retrie-for-buffer (get-buffer buffername) retrie--type-forward-option name))
+
+(defun retrie-type-forward-in-file (filepath name)
+  "Apply the type of the fully-qualified name NAME in left-to-right manner in the file FILEPATH."
+  (interactive "ffile path:\nsname of type to apply (left-to-right) in %s:")
+  (retrie--call-retrie-for-file filepath retrie--type-forward-option name))
+
+(defun retrie-type-backward-in-current-buffer (name)
+  "Apply the type of the fully-qualified name NAME in right-to-left manner in the current buffer."
+  (interactive "sname of type to apply (right-to-left) in the current buffer:")
+  (retrie--call-retrie-for-buffer (current-buffer) retrie--type-backward-option name))
+
+(defun retrie-type-backward-in-buffer (buffername name)
+  "Apply the type of the fully-qualified name NAME in right-to-left manner in the buffer BUFFERNAME."
+  (interactive "*bbuffer:\nsname of type to apply (right-to-left) in %s:")
+  (retrie--call-retrie-for-buffer (get-buffer buffername) retrie--type-backward-option name))
+
+(defun retrie-type-backward-in-file (filepath name)
+  "Apply the type of the fully-qualified name NAME in right-to-left manner in the file FILEPATH."
+  (interactive "ffile path:\nsname of type to apply (right-to-left) in %s:")
+  (retrie--call-retrie-for-file filepath retrie--type-backward-option name))
+
+(defun retrie-adhoc-in-current-buffer (adhoc)
+  "Apply the rule ADHOC in the current buffer."
+  (interactive "srewrite rule to apply in the current buffer:")
+  (retrie--call-retrie-for-buffer (current-buffer) retrie--adhoc-option adhoc))
+
+(defun retrie-adhoc-in-buffer (buffername adhoc)
+  "Apply the rule ADHOC in the buffer BUFFERNAME."
+  (interactive "*bbuffer:\nsrewrite rule to apply in %s:")
+  (retrie--call-retrie-for-buffer (get-buffer buffername) retrie--adhoc-option adhoc))
+
+(defun retrie-adhoc-in-file (filepath adhoc)
+  "Apply the rule ADHOC in the file FILEPATH."
+  (interactive "ffile path:\nsrewrite rule to apply in %s:")
+  (retrie--call-retrie-for-file filepath retrie--adhoc-option adhoc))
 
 ;; Internal functions
 
